@@ -1,73 +1,155 @@
-# Welcome to your Lovable project
+# Pictogram - Instagram-like Social Media App
 
-## Project info
+A full-stack Instagram-like social media application built with React, TypeScript, and Lovable Cloud.
 
-**URL**: https://lovable.dev/projects/75748eaa-fed9-4ad3-ad7c-66f9ee7d6d85
+## Features
 
-## How can I edit this code?
+- 🔐 **User Authentication** - Sign up, login, and logout functionality
+- 📸 **Post Creation** - Upload images with captions
+- ❤️ **Like System** - Like and unlike posts
+- 💬 **Comments** - Add and view comments on posts
+- 👤 **User Profiles** - View and edit your profile, see your posts grid
+- 📱 **Responsive Design** - Works beautifully on mobile, tablet, and desktop
+- 🎨 **Instagram-inspired UI** - Clean, modern design with gradient accents
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+### Frontend
+- **React** with TypeScript
+- **Vite** for blazing fast development
+- **Tailwind CSS** for styling
+- **Shadcn UI** for beautiful components
+- **React Router** for navigation
+- **TanStack Query** for data fetching
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/75748eaa-fed9-4ad3-ad7c-66f9ee7d6d85) and start prompting.
+### Backend (Lovable Cloud)
+- **Authentication** - Email/password with auto-confirm
+- **PostgreSQL Database** - For storing users, posts, likes, and comments
+- **Storage** - For image uploads
+- **Row Level Security (RLS)** - Data is properly secured
 
-Changes made via Lovable will be committed automatically to this repo.
+## Database Schema
 
-**Use your preferred IDE**
+### Tables
+- `profiles` - User information (username, bio, avatar)
+- `posts` - User posts (image URL, caption, timestamps)
+- `likes` - Post likes
+- `comments` - Post comments
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Storage
+- `posts` bucket - For storing post images
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## How to Run Locally
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+1. Clone the repository:
+```bash
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+2. Install dependencies:
+```bash
+npm install
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. Open your browser and navigate to `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## How to Use
 
-**Use GitHub Codespaces**
+1. **Sign Up** - Create a new account with email and password
+2. **Sign In** - Log in with your credentials
+3. **Create Post** - Click the "+" icon in the navbar to upload a new post
+4. **Interact** - Like posts, add comments, and explore the feed
+5. **Profile** - Click the user icon to view and edit your profile
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Project Structure
 
-## What technologies are used for this project?
+```
+src/
+├── components/       # Reusable components
+│   ├── ui/          # Shadcn UI components
+│   ├── Navbar.tsx   # Navigation bar
+│   └── PostCard.tsx # Post display component
+├── pages/           # Page components
+│   ├── Auth.tsx     # Authentication page
+│   ├── Feed.tsx     # Main feed page
+│   ├── CreatePost.tsx # Post creation page
+│   └── Profile.tsx  # User profile page
+├── integrations/    # Backend integrations (auto-generated)
+│   └── supabase/    # Lovable Cloud client
+├── hooks/           # Custom React hooks
+├── lib/             # Utility functions
+└── App.tsx          # Main app component with routing
+```
 
-This project is built with:
+## Key Features Implementation
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Authentication
+- Uses Lovable Cloud authentication with email/password
+- Protected routes redirect to login if not authenticated
+- Auto-confirm email enabled for easier testing
 
-## How can I deploy this project?
+### Post Feed
+- Displays posts in reverse chronological order
+- Shows post images, captions, likes count, and comments count
+- Real-time like updates
 
-Simply open [Lovable](https://lovable.dev/projects/75748eaa-fed9-4ad3-ad7c-66f9ee7d6d85) and click on Share -> Publish.
+### Like System
+- Toggle like/unlike with visual feedback
+- Heart icon fills when liked
+- Prevents duplicate likes with unique constraint
 
-## Can I connect a custom domain to my Lovable project?
+### Comments
+- Add comments to any post
+- View all comments on a post
+- Comments display with username and timestamp
 
-Yes, you can!
+### User Profiles
+- View any user's profile with their posts grid
+- Edit your own username and bio
+- Display user stats (post count)
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Image Upload
+- Drag and drop or click to upload
+- Image preview before posting
+- Stored securely in Lovable Cloud storage
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Security
+
+All data is protected with Row Level Security (RLS) policies:
+- Users can only modify their own posts, likes, and comments
+- Everyone can view all posts and profiles
+- Storage policies restrict file access to owners
+
+## Deployment
+
+To deploy your app:
+1. Click the "Publish" button in Lovable
+2. Your app will be deployed with both frontend and backend
+3. Backend changes deploy automatically, frontend requires clicking "Update"
+
+## Customization
+
+The app uses a design system defined in:
+- `src/index.css` - Color tokens and global styles
+- `tailwind.config.ts` - Tailwind configuration
+
+Instagram-inspired gradient colors:
+- Primary: Pink (`hsl(340 75% 55%)`)
+- Accent: Purple (`hsl(291 64% 42%)`)
+- Secondary: Orange (`hsl(45 100% 51%)`)
+
+## Support
+
+For questions or issues:
+- Visit [Lovable Documentation](https://docs.lovable.dev/)
+- Join [Lovable Discord](https://discord.com/channels/1119885301872070706/1280461670979993613)
+
+## License
+
+This project is created with Lovable and can be modified and deployed as needed.
