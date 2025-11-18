@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { mockDb } from "@/lib/mockDb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,27 +18,17 @@ const Auth = () => {
 
   useEffect(() => {
     // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/");
-      }
-    });
+    const { data: { session } } = mockDb.getSession();
+    if (session) {
+      navigate("/");
+    }
   }, [navigate]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/`,
-        data: {
-          username: username,
-        },
-      },
-    });
+    const { error } = await mockDb.signUp(email, password, username);
 
     if (error) {
       toast({
@@ -49,11 +39,9 @@ const Auth = () => {
     } else {
       toast({
         title: "Success!",
-        description: "Account created successfully. You can now log in.",
+        description: "Account created successfully!",
       });
-      setEmail("");
-      setPassword("");
-      setUsername("");
+      navigate("/");
     }
     setLoading(false);
   };
@@ -61,11 +49,8 @@ const Auth = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    
+    const { error } = await mockDb.signIn(email, password);
 
     if (error) {
       toast({

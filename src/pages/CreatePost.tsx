@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { mockDb } from "@/lib/mockDb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,13 +20,12 @@ const CreatePost = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate("/auth");
-      } else {
-        setUser(session.user);
-      }
-    });
+    const { data: { session } } = mockDb.getSession();
+    if (!session) {
+      navigate("/auth");
+    } else {
+      setUser(session.user);
+    }
   }, [navigate]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,26 +47,20 @@ const CreatePost = () => {
     setLoading(true);
 
     try {
-      // Upload image to storage
-      const fileExt = image.name.split(".").pop();
-      const fileName = `${user.id}/${Math.random()}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage
-        .from("posts")
-        .upload(fileName, image);
+      // Upload image
+      const { data: uploadData, error: uploadError } = await mockDb.uploadFile(image);
 
       if (uploadError) throw uploadError;
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from("posts")
-        .getPublicUrl(fileName);
+      const { data: { publicUrl } } = mockDb.getPublicUrl(uploadData!.path);
 
       // Create post
-      const { error: insertError } = await supabase.from("posts").insert({
-        user_id: user.id,
-        image_url: publicUrl,
-        caption: caption,
-      });
+      const { error: insertError } = await mockDb.createPost(
+        user.id,
+        publicUrl,
+        caption
+      );
 
       if (insertError) throw insertError;
 

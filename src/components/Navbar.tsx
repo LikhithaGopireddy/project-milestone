@@ -1,7 +1,7 @@
 import { Home, PlusSquare, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { mockDb } from "@/lib/mockDb";
 import { useToast } from "@/hooks/use-toast";
 
 interface NavbarProps {
@@ -13,16 +13,12 @@ const Navbar = ({ user }: NavbarProps) => {
   const { toast } = useToast();
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to log out",
-        variant: "destructive",
-      });
-    } else {
-      navigate("/auth");
-    }
+    await mockDb.signOut();
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out",
+    });
+    navigate("/auth");
   };
 
   return (
