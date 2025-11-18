@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { mockDb } from "@/lib/mockDb";
 import Auth from "./pages/Auth";
 import Feed from "./pages/Feed";
 import CreatePost from "./pages/CreatePost";
@@ -18,12 +18,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    const { data: { session } } = mockDb.getSession();
+    setUser(session?.user ?? null);
+    setLoading(false);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = mockDb.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null);
       }

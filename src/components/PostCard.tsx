@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Heart, MessageCircle, Trash2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { mockDb } from "@/lib/mockDb";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -40,9 +40,9 @@ const PostCard = ({ post, currentUserId, onUpdate }: PostCardProps) => {
     try {
       if (isLiked) {
         const likeToDelete = post.likes.find((like: any) => like.user_id === currentUserId);
-        await supabase.from("likes").delete().eq("id", likeToDelete.id);
+        await mockDb.removeLike(likeToDelete.id);
       } else {
-        await supabase.from("likes").insert({ post_id: post.id, user_id: currentUserId });
+        await mockDb.addLike(post.id, currentUserId);
       }
       onUpdate();
     } catch (error: any) {
@@ -59,11 +59,7 @@ const PostCard = ({ post, currentUserId, onUpdate }: PostCardProps) => {
     if (!comment.trim() || !currentUserId) return;
 
     try {
-      await supabase.from("comments").insert({
-        post_id: post.id,
-        user_id: currentUserId,
-        text: comment,
-      });
+      await mockDb.addComment(post.id, currentUserId, comment);
       setComment("");
       onUpdate();
       loadComments();
@@ -79,12 +75,7 @@ const PostCard = ({ post, currentUserId, onUpdate }: PostCardProps) => {
   const loadComments = async () => {
     setLoadingComments(true);
     try {
-      // Fetch comments
-      const { data: commentsData, error: commentsError } = await supabase
-        .from("comments")
-        .select("*")
-        .eq("post_id", post.id)
-        .order("created_at", { ascending: true });
+      const { data: commentsData, error: commentsError } = await mockDb.getComments(post.id);
 
       if (commentsError) throw commentsError;
 
@@ -92,10 +83,7 @@ const PostCard = ({ post, currentUserId, onUpdate }: PostCardProps) => {
       const userIds = [...new Set(commentsData?.map(c => c.user_id) || [])];
       
       // Fetch profiles for those users
-      const { data: profilesData, error: profilesError } = await supabase
-        .from("profiles")
-        .select("id, username")
-        .in("id", userIds);
+      const { data: profilesData, error: profilesError } = await mockDb.getProfiles(userIds);
 
       if (profilesError) throw profilesError;
 
@@ -129,7 +117,7 @@ const PostCard = ({ post, currentUserId, onUpdate }: PostCardProps) => {
 
   const handleDeletePost = async () => {
     try {
-      const { error } = await supabase.from("posts").delete().eq("id", post.id);
+      const { error } = await mockDb.deletePost(post.id);
       if (error) throw error;
       
       toast({

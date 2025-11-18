@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { mockDb } from "@/lib/mockDb";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -24,11 +24,10 @@ const Profile = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
+    const { data: { session } } = mockDb.getSession();
+    setUser(session?.user ?? null);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = mockDb.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null);
       }
@@ -46,16 +45,12 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
+      const { data, error } = await mockDb.getProfile(userId!);
 
       if (error) throw error;
       setProfile(data);
-      setUsername(data.username);
-      setBio(data.bio || "");
+      setUsername(data!.username);
+      setBio(data!.bio || "");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -69,11 +64,7 @@ const Profile = () => {
 
   const fetchPosts = async () => {
     try {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
+      const { data, error } = await mockDb.getPostsByUserId(userId!);
 
       if (error) throw error;
       setPosts(data || []);
@@ -89,10 +80,7 @@ const Profile = () => {
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ username, bio })
-        .eq("id", userId);
+      const { error } = await mockDb.updateProfile(userId!, { username, bio });
 
       if (error) throw error;
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { mockDb } from "@/lib/mockDb";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import PostCard from "@/components/PostCard";
@@ -25,11 +25,10 @@ const Feed = () => {
 
   useEffect(() => {
     // Get current user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
+    const { data: { session } } = mockDb.getSession();
+    setUser(session?.user ?? null);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = mockDb.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null);
       }
@@ -44,26 +43,15 @@ const Feed = () => {
 
   const fetchPosts = async () => {
     try {
-      // First, get all posts with likes and comments count
-      const { data: postsData, error: postsError } = await supabase
-        .from("posts")
-        .select(`
-          *,
-          likes (id, user_id),
-          comments (id)
-        `)
-        .order("created_at", { ascending: false });
+      const { data: postsData, error: postsError } = await mockDb.getPosts();
 
       if (postsError) throw postsError;
 
-      // Then get all unique user IDs
+      // Get all unique user IDs
       const userIds = [...new Set(postsData?.map(p => p.user_id) || [])];
       
       // Fetch profiles for those users
-      const { data: profilesData, error: profilesError } = await supabase
-        .from("profiles")
-        .select("id, username, avatar_url")
-        .in("id", userIds);
+      const { data: profilesData, error: profilesError } = await mockDb.getProfiles(userIds);
 
       if (profilesError) throw profilesError;
 
