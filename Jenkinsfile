@@ -5,10 +5,15 @@ pipeline {
   agent any
 
   stages {
+
+  stage('Prepare') {
+        steps {
+          // Use the same checkout Jenkins used to fetch the Jenkinsfile
+          checkout scm
+        }
+      }
     stage('Build') {
       steps {
-        // checkout repo
-        git "https://github.com/LikhithaGopireddy/project-milestone.git"
 
         // install and build
         sh 'npm ci'
