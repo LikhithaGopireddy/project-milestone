@@ -1,21 +1,19 @@
-// optional versioning
+// version
 def version = "0.${env.BUILD_NUMBER}"
 
 pipeline {
   agent any
 
   stages {
-
-  stage('Prepare') {
-        steps {
-          // Use the same checkout Jenkins used to fetch the Jenkinsfile
-          checkout scm
-        }
+    stage('Prepare') {
+      steps {
+        checkout scm   // optional — ensures workspace matches Jenkinsfile checkout
       }
+    }
+
     stage('Build') {
       steps {
-
-        // install and build
+        // requires node & npm on the agent
         sh 'npm ci'
         sh 'npm run build'
       }
@@ -23,7 +21,6 @@ pipeline {
 
     stage('Test / Lint') {
       steps {
-        // lint step (won't fail pipeline because of "|| true")
         sh 'npm run lint || true'
       }
     }
@@ -31,31 +28,26 @@ pipeline {
     stage('Deploy') {
       steps {
         script {
-          // stop & remove all containers (ignore error if none)
-          sh 'docker rm -f $(docker ps -aq) || true'
+          // only remove the named container if it exists (safe)
+          sh '''
+            if docker ps -a --format '{{.Names}}' | grep -q '^pictogram$'; then
+              docker rm -f pictogram || true
+            fi
+          '''
 
-          // remove all images (ignore error if none) — be careful on shared agents
-          sh 'docker rmi -f $(docker images -aq) || true'
+          // build image with version tag (fixed name)
+          sh "docker build -t my-pictogram-app:${version} ."
 
-          // build image with version tag
-          sh "docker build -t my-pictogram-appp:${version} ."
-
-          // run container mapping host port 80 -> container 3000
-          sh "docker run -d -p 80:3000 --name pictogram my-pictogram-appp:${version}"
+          // run container (host port 80 -> container 3000)
+          sh "docker run -d -p 80:3000 --name pictogram my-pictogram-app:${version}"
         }
       }
     }
   }
 
   post {
-    success {
-      echo "🎉 Deployment successful — pictogram running (image: my-pictogram-appp:${version})"
-    }
-    failure {
-      echo "❌ Pipeline failed — check logs."
-    }
-    always {
-      echo "Pipeline finished for build ${env.BUILD_NUMBER}"
-    }
+    success { echo "🎉 Deployment successful — pictogram running (image: my-pictogram-app:${version})" }
+    failure { echo "❌ Pipeline failed — check logs." }
+    always  { echo "Pipeline finished for build ${env.BUILD_NUMBER}" }
   }
 }
