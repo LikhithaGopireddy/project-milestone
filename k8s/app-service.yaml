@@ -7,5 +7,5 @@ spec:
     app: pictogram
   ports:
     - port: 80          # service port
+      protocol: TCP
       targetPort: 3000  # container port
-      nodePort: 30001   # you'll access using <node-ip>:30001
