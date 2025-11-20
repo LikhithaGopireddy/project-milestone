@@ -33,6 +33,10 @@ pipeline {
 
     stage('Deploy to Kubernetes') {
       steps {
+        withCredentials([[
+          $class: 'AmazonWebServicesCredentialsBinding',
+          credentialsId: 'aws-creds'
+        ]]) {
         sh """
           kubectl apply -f k8s/app-deployment.yaml
           kubectl apply -f k8s/app-service.yaml
@@ -44,6 +48,7 @@ pipeline {
 
         """
       }
+     }
     }
   }
 
