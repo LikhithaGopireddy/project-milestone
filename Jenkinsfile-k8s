@@ -5,8 +5,8 @@ pipeline {
   agent any
 
    environment {
-    AWS_REGION = "eu-central-1"
-    EKS_CLUSTER = "quantum-eks-cluster"
+    AWS_REGION = "us-east-1"
+    EKS_CLUSTER = "pictogram-eks-cluster"
   } 
 
   stages {

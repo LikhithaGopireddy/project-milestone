@@ -2,14 +2,14 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: haneesh-cloud
-  region: us-west-1
+  name: pictogram-eks-cluster
+  region: us-east-1
   # Update: Use a currently supported EKS Kubernetes version.
   # As of November 2025, 1.34 is the latest supported version.
   version: "1.34"
 
 managedNodeGroups:
-  - name: haneesh-nodes
+  - name: pictogram-nodes
     # Update: Replace t2.medium with a modern, general-purpose instance type.
     # t3.medium or m5.large are better choices. t3.medium is the burstable counterpart to t2.medium.
     instanceType: t3.medium
