@@ -1,17 +1,11 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: pictogram-ingress
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
+  name: sample-ingress
 spec:
-  tls:
-    - hosts:
-        - pictogram.example.com
-      secretName: pictogram-tls
+  ingressClassName: nginx
   rules:
-    - host: pictogram.example.com
-      http:
+    - http:
         paths:
           - path: /
             pathType: Prefix
