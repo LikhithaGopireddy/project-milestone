@@ -3,7 +3,6 @@ kind: Service
 metadata:
   name: pictogram-service
 spec:
-  type: NodePort
   selector:
     app: pictogram
   ports:
