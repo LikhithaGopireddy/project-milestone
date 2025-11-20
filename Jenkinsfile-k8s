@@ -36,7 +36,12 @@ pipeline {
         sh """
           kubectl apply -f k8s/app-deployment.yaml
           kubectl apply -f k8s/app-service.yaml
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.1/deploy/static/provider/aws/deploy.yaml
+          kubectl get pods -n ingress-nginx
           kubectl apply -f k8s/app-ingress.yaml
+          kubectl get svc -n ingress-nginx
+          kubectl get ingress
+
         """
       }
     }
