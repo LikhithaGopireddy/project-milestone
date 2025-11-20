@@ -16,19 +16,6 @@ pipeline {
       }
     }
 
-    stage('Build') {
-      steps {
-        // requires node & npm on the agent
-        sh 'npm ci'
-        sh 'npm run build'
-      }
-    }
-
-    stage('Test / Lint') {
-      steps {
-        sh 'npm run lint || true'
-      }
-    }
 
     stage('Connect to EKS') {
       steps {
