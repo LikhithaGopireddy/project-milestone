@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pictogram-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pictogram
+  template:
+    metadata:
+      labels:
+        app: pictogram
+    spec:
+      containers:
+        - name: pictogram
+          image: likhi1/my-pictogram-app:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000   # MUST match container's internal port
