@@ -25,4 +25,4 @@ managedNodeGroups:
       nodegroup-role: worker
     # Add: Explicitly define the AMI family for modern/recommended OS.
     # AL2023 is the latest, but AL2_x86_64 (Amazon Linux 2) is a very safe choice.
-    amiFamily: AmazonLinux2
+    amiFamily: AmazonLinux2023
