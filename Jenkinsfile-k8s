@@ -6,7 +6,7 @@ pipeline {
 
    environment {
     AWS_REGION = "us-east-1"
-    EKS_CLUSTER = "pictogram-eks-cluster"
+    EKS_CLUSTER = "pictogram-eks-cluster-2"
   } 
 
   stages {
