@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: pictogram-service
 spec:
+  type: LoadBalancer
   selector:
     app: pictogram
   ports:
